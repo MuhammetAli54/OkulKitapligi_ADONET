@@ -5,6 +5,10 @@ VisualStudioVersion = 16.0.31729.503
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OkulKitapligi_ADONET", "OkulKitapligi_ADONET\OkulKitapligi_ADONET.csproj", "{434BDA11-5F48-4381-85FA-EF9168EF93D9}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OkulKitapligiADONET_DAL", "OkulKitapligiADONET_DAL\OkulKitapligiADONET_DAL.csproj", "{A8BA8EA5-E9CC-41D5-9D15-B31C5389ACF2}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OkulKitapligiADONET_BLL", "OkulKitapligiADONET_BLL\OkulKitapligiADONET_BLL.csproj", "{B3BBAFFF-5ECD-4EE0-A002-5D93ABAD77D9}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -15,6 +19,14 @@ Global
 		{434BDA11-5F48-4381-85FA-EF9168EF93D9}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{434BDA11-5F48-4381-85FA-EF9168EF93D9}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{434BDA11-5F48-4381-85FA-EF9168EF93D9}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A8BA8EA5-E9CC-41D5-9D15-B31C5389ACF2}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A8BA8EA5-E9CC-41D5-9D15-B31C5389ACF2}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A8BA8EA5-E9CC-41D5-9D15-B31C5389ACF2}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A8BA8EA5-E9CC-41D5-9D15-B31C5389ACF2}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B3BBAFFF-5ECD-4EE0-A002-5D93ABAD77D9}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B3BBAFFF-5ECD-4EE0-A002-5D93ABAD77D9}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B3BBAFFF-5ECD-4EE0-A002-5D93ABAD77D9}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B3BBAFFF-5ECD-4EE0-A002-5D93ABAD77D9}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

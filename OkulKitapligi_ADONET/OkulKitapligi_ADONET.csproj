@@ -58,6 +58,18 @@
     <Compile Include="FormKitaplar.Designer.cs">
       <DependentUpon>FormKitaplar.cs</DependentUpon>
     </Compile>
+    <Compile Include="FormKitapOduncIslemleri.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="FormKitapOduncIslemleri.Designer.cs">
+      <DependentUpon>FormKitapOduncIslemleri.cs</DependentUpon>
+    </Compile>
+    <Compile Include="FormOduncIslemleri_Sonra.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="FormOduncIslemleri_Sonra.Designer.cs">
+      <DependentUpon>FormOduncIslemleri_Sonra.cs</DependentUpon>
+    </Compile>
     <Compile Include="Form_EventKonusu.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -72,11 +84,23 @@
     <Compile Include="UC_MyButton.Designer.cs">
       <DependentUpon>UC_MyButton.cs</DependentUpon>
     </Compile>
+    <Compile Include="UC_MyListBox.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="UC_MyListBox.Designer.cs">
+      <DependentUpon>UC_MyListBox.cs</DependentUpon>
+    </Compile>
     <EmbeddedResource Include="Form1.resx">
       <DependentUpon>Form1.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="FormKitaplar.resx">
       <DependentUpon>FormKitaplar.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="FormKitapOduncIslemleri.resx">
+      <DependentUpon>FormKitapOduncIslemleri.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="FormOduncIslemleri_Sonra.resx">
+      <DependentUpon>FormOduncIslemleri_Sonra.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Form_EventKonusu.resx">
       <DependentUpon>Form_EventKonusu.cs</DependentUpon>
@@ -93,6 +117,9 @@
     <EmbeddedResource Include="UC_MyButton.resx">
       <DependentUpon>UC_MyButton.cs</DependentUpon>
     </EmbeddedResource>
+    <EmbeddedResource Include="UC_MyListBox.resx">
+      <DependentUpon>UC_MyListBox.cs</DependentUpon>
+    </EmbeddedResource>
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>
@@ -105,6 +132,12 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\OkulKitapligiADONET_BLL\OkulKitapligiADONET_BLL.csproj">
+      <Project>{b3bbafff-5ecd-4ee0-a002-5d93abad77d9}</Project>
+      <Name>OkulKitapligiADONET_BLL</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>
