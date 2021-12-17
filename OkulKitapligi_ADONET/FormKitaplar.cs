@@ -388,9 +388,14 @@ namespace OkulKitapligi_ADONET
                 int sonuc = komut.ExecuteNonQuery();
                 if (sonuc > 0)
                 {
-                    MessageBox.Show($"{comboBoxKitapGuncelle.SelectedText} 'a ait bilgiler güncellendi...");
+                    DataRowView data = comboBoxKitapGuncelle.SelectedItem as DataRowView;
+                    string eskiKitapAdi = data.Row.ItemArray[2].ToString();
+
+                    MessageBox.Show($"{eskiKitapAdi} isimli kitaba ait bilgiler güncellendi...");
                     GuncelleSayfasindakiGroupBoxIciniTemizle();
                     comboBoxKitapGuncelle.SelectedIndex = -1;
+                    TumKitaplariComboBoxaGetir();
+                    TumKitaplariViewileGrideGetir();
                 }
                 else
                 {

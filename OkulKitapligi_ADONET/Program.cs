@@ -16,7 +16,7 @@ namespace OkulKitapligi_ADONET
         {
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
-            Application.Run(new FormKitapOduncIslemleri());
+            Application.Run(new FormGiris());
         }
     }
 }

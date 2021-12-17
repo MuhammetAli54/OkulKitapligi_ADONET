@@ -172,7 +172,7 @@ namespace OkulKitapligiADONET_DAL
         {
             string retVal = string.Empty;
             string theSet = string.Empty;
-            foreach (string theKey in htData)
+            foreach (string theKey in htData.Keys)
             {
                 //KitapAdi = 'Yeni Kitap' ---> yani htData'daki anahtarı ve değerini yanyana almam gerekli.
                 theSet += theKey + "=" + htData[theKey].ToString() + ",";
@@ -255,7 +255,6 @@ namespace OkulKitapligiADONET_DAL
 
             return retVal;
         }
-
 
         //insert update ve delete cümlelerini executenonquery ile işleyen metot
         public int ExecuteTheQuery(string theQuery)

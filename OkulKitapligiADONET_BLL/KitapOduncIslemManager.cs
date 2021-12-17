@@ -1,4 +1,5 @@
-﻿using OkulKitapligiADONET_DAL;
+﻿using OkulKitapligiADONET_BLL.ViewModels;
+using OkulKitapligiADONET_DAL;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -11,7 +12,7 @@ namespace OkulKitapligiADONET_BLL
 {
     public class KitapOduncIslemManager
     {
-        MyPocketDAL myPocketDAL = new MyPocketDAL("DESKTOP-TUMHS1A","OKULKITAPLIGI","","");
+        MyPocketDAL myPocketDAL = new MyPocketDAL("DESKTOP-TUMHS1A", "OKULKITAPLIGI", "", "");
 
         public DataTable TumKitaplariGetir()
         {
@@ -46,7 +47,7 @@ namespace OkulKitapligiADONET_BLL
             try
             {
                 DataTable data = new DataTable();
-                data = myPocketDAL.GetTheData("select i.IslemId,CONCAT(o.OgrAd,' ',o.OgrSoyad) as OgrenciAdSoyad,k.KitapAdi,i.OduncAldigiTarih,i.OduncBitisTarih from Islem i inner join kitaplar k on k.KitapId=i.KitapId inner join Ogrenciler o on o.OgrId=i.OgrId");
+                data = myPocketDAL.GetTheData("select i.IslemId,i.KitapId,CONCAT(o.OgrAd,' ',o.OgrSoyad) as OgrenciAdSoyad,k.KitapAdi,i.OduncAldigiTarih,i.OduncBitisTarih from Islem i inner join kitaplar k on k.KitapId=i.KitapId inner join Ogrenciler o on o.OgrId=i.OgrId");
                 return data;
             }
             catch (Exception ex)
@@ -55,13 +56,50 @@ namespace OkulKitapligiADONET_BLL
             }
         }
 
+        public List<IslemViewModel> GrideVerileriViewModelleGetir()
+        {
+            List<IslemViewModel> data = new List<IslemViewModel>();
+            try
+            {
+                DataTable theData = new DataTable();
+                theData = myPocketDAL.GetTheData("select i.IslemId, k.KitapId, o.OgrId, CONCAT(o.OgrAd, ' ', o.OgrSoyad) as OgrenciAdSoyad, k.KitapAdi, i.OduncAldigiTarih, i.OduncBitisTarih, i.TeslimEdildiMi from  Islem i inner join Kitaplar k on k.KitapId = i.KitapId inner join Ogrenciler o on o.OgrId = i.OgrId");
+
+                //veriler datatable ile geldi.
+                //ama ben o verileri tek tek döngü ile dönerken içindeki verileri viewmodelime aktaracağım.
+                for (int i = 0; i < theData.Rows.Count; i++)
+                {
+                    DataRow satir = theData.Rows[i];
+
+                    IslemViewModel veri = new IslemViewModel()
+                    {
+                        IslemId = (int)theData.Rows[i].ItemArray[0],
+                        KitapId = (int)theData.Rows[i].ItemArray[1],
+                        OgrId = (int)theData.Rows[i].ItemArray[2],
+                        OgrenciAdSoyad = theData.Rows[i].ItemArray[3].ToString(),
+                        KitapAdi = theData.Rows[i].ItemArray[4].ToString(),
+                        OduncAldigiTarih = Convert.ToDateTime(theData.Rows[i].ItemArray[5]),
+                        OduncBitisTarih = Convert.ToDateTime(theData.Rows[i].ItemArray[6]),
+                        TeslimEdildiMi = (bool)theData.Rows[i].ItemArray[7]
+                    };
+                    //IslemViewModel tipindeki veri isimli nesne IslemViewModel tipine sahip listeye eklenecek
+                    data.Add(veri);  //ekledik.
+                }
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+
+            return data;
+        }
+
         public int KitabınStogunuGetir(int kitapId)
         {
             try
             {
                 int stokAdeti = 0;
                 object data = myPocketDAL.GetTheDataByExecuteScalar($"select Stok from Kitaplar where KitapId={kitapId}");
-                if (data!=null)
+                if (data != null)
                 {
                     stokAdeti = Convert.ToInt32(data);
                 }
@@ -81,7 +119,7 @@ namespace OkulKitapligiADONET_BLL
             {
                 //stok adet
                 object stokAdeti = myPocketDAL.GetTheDataByExecuteScalar("select Stok from Kitaplar where KitapId=" + htVeri["KitapId"].ToString());
-                if (stokAdeti!=null)
+                if (stokAdeti != null)
                 {
                     //Stoğu azaltacağız
                     stokAdeti = (int)stokAdeti - 1;
@@ -101,6 +139,46 @@ namespace OkulKitapligiADONET_BLL
                 throw ex;
             }
             return sonuc;
+        }
+
+        public bool OduncKitapteslimEt(string tableName, int islemId, int kitapId)
+        {
+            //
+
+            try
+            {
+                bool sonuc = false;
+                //stok
+                object stokAdet = myPocketDAL.GetTheDataByExecuteScalar("select Stok from Kitaplar where KitapId=" + kitapId);
+                if (stokAdet!=null)
+                {
+                    stokAdet = (int)stokAdet + 1;
+                    string[] komutCumleleri = new string[2];
+                    komutCumleleri[0] = "update Kitaplar Set Stok=" + stokAdet + " where KitapId=" + kitapId;
+
+                    //createUpdateAsString'i kullanmak amacıyla hashtable yapacağız
+                    //kullanmak istemezseniz 2. komut cümlesini yukarıdaki gibi ekleyebilirsiniz
+                    komutCumleleri[1] = "update Islem Set TeslimEdildiMi=1,OduncBitisTarih='" + DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss") + "' where IslemId=" + islemId;
+
+                    //Hashtable htVeri = new Hashtable();
+                    //string bitisTarih = "'" + DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss") + "'";
+
+                    //htVeri.Add("TeslimEdildiMi", "1");
+                    //htVeri.Add("OduncBitisTarih", bitisTarih);
+                    //string kosulum = "IslemId=" + islemId;
+                    //komutCumleleri[1] = myPocketDAL.CreateUpdateQueryAsString("Islem", htVeri,kosulum);
+                    sonuc = myPocketDAL.ExecuteTheQueriesWithTransaction(komutCumleleri);
+                }
+                else
+                {
+                    throw new Exception("HATA: Stok adeti çekilemediği için hata oluştu!");
+                }
+                return sonuc;
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
         }
     }
 }
