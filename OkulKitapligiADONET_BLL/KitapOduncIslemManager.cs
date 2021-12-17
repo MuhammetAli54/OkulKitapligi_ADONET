@@ -1,5 +1,6 @@
 ﻿using OkulKitapligiADONET_DAL;
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Data;
 using System.Linq;
@@ -71,6 +72,35 @@ namespace OkulKitapligiADONET_BLL
             {
                 throw ex;
             }
+        }
+
+        public bool OduncKitapKaydiniYap(string tableName, Hashtable htVeri)
+        {
+            bool sonuc = false;
+            try
+            {
+                //stok adet
+                object stokAdeti = myPocketDAL.GetTheDataByExecuteScalar("select Stok from Kitaplar where KitapId=" + htVeri["KitapId"].ToString());
+                if (stokAdeti!=null)
+                {
+                    //Stoğu azaltacağız
+                    stokAdeti = (int)stokAdeti - 1;
+                    string updateCumlesi = "Update Kitaplar set Stok= " + stokAdeti + " where KitapId=" + htVeri["KitapId"];
+
+                    //ödünç 
+                    string insertCumlesi = myPocketDAL.CreateInsertQueryAsString(tableName, htVeri);
+                    sonuc = myPocketDAL.ExecuteTheQueriesWithTransaction(insertCumlesi, updateCumlesi);
+                }
+                else
+                {
+                    throw new Exception("HATA: Stok adet bilgisi alınamadığı için hata oluştu !");
+                }
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+            return sonuc;
         }
     }
 }

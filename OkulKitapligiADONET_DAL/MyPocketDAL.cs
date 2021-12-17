@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Data;
 using System.Data.SqlClient;
@@ -68,7 +69,7 @@ namespace OkulKitapligiADONET_DAL
             string queryString = "";
             if (string.IsNullOrEmpty(condition))
             {
-                queryString = "Select " + fieldName +  " from " + tableName;
+                queryString = "Select " + fieldName + " from " + tableName;
             }
             else
             {
@@ -86,7 +87,7 @@ namespace OkulKitapligiADONET_DAL
             return retVal;
         }
 
-        public DataTable GetTheData (string query)
+        public DataTable GetTheData(string query)
         {
             DataTable retVal = new DataTable();
             using (this.mySQLConnection)
@@ -106,7 +107,7 @@ namespace OkulKitapligiADONET_DAL
         {
             try
             {
-                if (this.mySQLConnection.State!=ConnectionState.Open)
+                if (this.mySQLConnection.State != ConnectionState.Open)
                 {
                     this.mySQLConnection.ConnectionString = this.SQLConnectionString;
                     this.mySQLConnection.Open();
@@ -122,7 +123,7 @@ namespace OkulKitapligiADONET_DAL
         {
             try
             {
-                if (this.mySQLConnection.State!=ConnectionState.Closed)
+                if (this.mySQLConnection.State != ConnectionState.Closed)
                 {
                     this.mySQLConnection.Close();
                 }
@@ -135,16 +136,142 @@ namespace OkulKitapligiADONET_DAL
 
         public object GetTheDataByExecuteScalar(string query)
         {
-            object retVal=null;
+            object retVal = null;
             using (this.mySQLConnection)
             {
                 this.mySqlCommand = new SqlCommand(query, this.mySQLConnection);
                 OpenTheConnection();
-               retVal = this.mySqlCommand.ExecuteScalar();
+                retVal = this.mySqlCommand.ExecuteScalar();
             }
 
             return retVal;
         }
 
+        //insert ile ilgili işlemler
+        //1. adım insert query cümlesi oluşturan metot
+        public string CreateInsertQueryAsString(string tableName, Hashtable htData)
+        {
+            string retVal = string.Empty;
+            string theFields = "", theValues = "";
+            foreach (string theKey in htData.Keys)
+            {
+                string theValue = htData[theKey].ToString();
+                theFields += theKey + ",";
+                theValues += theValue + ",";
+            }
+            //en sondaki virgüllerden kurtuluyoruz
+            theFields = theFields.TrimEnd(','); //en sondaki virgülü traşla
+            theValues = theValues.TrimEnd(',');
+
+            retVal = "insert into " + tableName + "(" + theFields + ") values (" + theValues + ")";
+            return retVal;
+        }
+
+        //Update ile ilgili query cümlesi oluşturan metot
+        public string CreateUpdateQueryAsString(string tableName, Hashtable htData, string condition)
+        {
+            string retVal = string.Empty;
+            string theSet = string.Empty;
+            foreach (string theKey in htData)
+            {
+                //KitapAdi = 'Yeni Kitap' ---> yani htData'daki anahtarı ve değerini yanyana almam gerekli.
+                theSet += theKey + "=" + htData[theKey].ToString() + ",";
+            }
+            theSet = theSet.TrimEnd(',');
+            retVal = "update " + tableName + " set " + theSet + " where " + condition;
+            return retVal;
+        }
+
+        //Delete ile ilgili query cümlesi oluşturan metot
+        public string CreateDeleteQueryAsString(string tableName, string condition)
+        {
+            string retVal = string.Empty;
+            retVal = "delete from " + tableName + " where " + condition;
+
+            return retVal;
+        }
+
+        public string CreateDeleteQueryAsString(string tableName, Hashtable htData)
+        {
+            string retVal = string.Empty;
+            if (htData.Count == 1)
+            {
+                foreach (string theKey in htData)
+                {
+                    retVal = "delete from " + tableName + " where " + theKey + "=" + htData[theKey].ToString();
+                }
+            }
+            else
+            {
+                string deleteConditions = string.Empty;
+                foreach (string theKey in htData)
+                {
+                    deleteConditions += theKey + "=" + htData[theKey].ToString() + " and ";
+
+                }
+                deleteConditions.TrimEnd();
+                //deleteConditions.TrimEnd("dna".ToCharArray());
+                deleteConditions.TrimEnd('d');
+                deleteConditions.TrimEnd('n');
+                deleteConditions.TrimEnd('a');
+
+                retVal = "delete from " + tableName + " where " + deleteConditions;
+            }
+
+
+
+            return retVal;
+        }
+
+        //2. adım executenonquery işlemini TRANSACTION ile yapmak
+        public bool ExecuteTheQueriesWithTransaction(params string[] theQueries)
+        {
+            bool retVal = false;
+            SqlTransaction myTransaction = null;
+            try
+            {
+                using (this.mySQLConnection)
+                {
+                    OpenTheConnection();
+                    myTransaction = this.mySQLConnection.BeginTransaction();
+
+                    //işlemler
+                    foreach (string item in theQueries)
+                    {
+                        this.mySqlCommand = new SqlCommand(item, this.mySQLConnection,myTransaction);
+                        this.mySqlCommand.ExecuteNonQuery();
+                    }
+
+                    myTransaction.Commit();
+                    retVal = true;
+                }
+            }
+            catch (Exception ex)
+            {
+                myTransaction.Rollback();
+                retVal = false;
+                throw ex;
+            }
+
+            return retVal;
+        }
+
+
+        //insert update ve delete cümlelerini executenonquery ile işleyen metot
+        public int ExecuteTheQuery(string theQuery)
+        {
+            int rowsAffected = 0;
+            using (this.mySQLConnection)
+            {
+                this.mySqlCommand = new SqlCommand(theQuery, this.mySQLConnection);
+                OpenTheConnection();
+                rowsAffected = this.mySqlCommand.ExecuteNonQuery();
+                if (rowsAffected == 0)
+                {
+                    throw new Exception("HATA: Kayıt eklenemedi !");
+                }
+            }
+            return rowsAffected;
+        }
     }
 }

@@ -1,5 +1,6 @@
 ﻿using OkulKitapligiADONET_BLL;
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
@@ -76,7 +77,28 @@ namespace OkulKitapligi_ADONET
 
                 if (kontrol)
                 {
-                    MessageBox.Show("INSERT ILE EKLEME YAPILACAK");
+                    string baslangicTarihi = "'" + dateTimePickerBaslangic.Value.ToString("yyyy-MM-dd HH:mm:ss") + "'";
+
+                    string bitisTarihi = "'" + dateTimePickerBitis.Value.ToString("yyyy-MM-dd HH:mm:ss") + "'";
+
+                    Hashtable htVeri = new Hashtable();
+                    htVeri.Add("OgrId", (int)comboBoxOgrenci.SelectedValue);
+                    htVeri.Add("KitapId", (int)comboBoxKitap.SelectedValue);
+                    htVeri.Add("OduncAldigiTarih", baslangicTarihi);
+                    htVeri.Add("OduncBitisTarih", bitisTarihi);
+                    if (kitapOduncIslemManager.OduncKitapKaydiniYap("Islem",htVeri))
+                    {
+                        MessageBox.Show("Ödünç alma işleminiz başarıyla kaydedilmiştir...");
+                        //temizlik
+                        GridViewiAyarlaveDoldur();
+                        OgrenciGroupBoxTemizle();
+                        KitapGroupBoxPasifYap();
+                        OduncTarihGroupBoxPasifYap();
+                    }
+                    else
+                    {
+                        MessageBox.Show("HATA: Kayıt yenilenirken beklenmedik bir hata oluştu !");
+                    }
                 }
                 else
                 {
@@ -97,7 +119,10 @@ namespace OkulKitapligi_ADONET
             dataGridViewOduncKitaplar.SelectionMode = DataGridViewSelectionMode.FullRowSelect;
             dataGridViewOduncKitaplar.DataSource = kitapOduncIslemManager.GrideVerileriGetir();
             dataGridViewOduncKitaplar.Columns["IslemId"].Visible = false;
-            dataGridViewOduncKitaplar.Columns[0].Width = 200;
+            for (int i = 0; i < dataGridViewOduncKitaplar.Columns.Count; i++)
+            {
+                dataGridViewOduncKitaplar.Columns[i].Width = 130;
+            }
         }
 
         private void TumKitaplariComboyaGetir()
@@ -142,6 +167,7 @@ namespace OkulKitapligi_ADONET
                 comboBoxKitap.SelectedIndex = -1;
             }
         }
+
         private void KitapGroupBoxAktifYap()
         {
             groupBoxKitap.Enabled = true;
